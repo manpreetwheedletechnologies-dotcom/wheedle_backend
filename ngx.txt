@@ -1,0 +1,17 @@
+server {
+    listen 80;
+    server_name wheedletechnologies.com www.wheedletechnologies.com;
+
+    root /var/www/wheedletechnologies.com/frontend;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /chat {
+        proxy_pass http://127.0.0.1:8001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
