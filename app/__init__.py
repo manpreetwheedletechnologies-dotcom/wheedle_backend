@@ -12,6 +12,6 @@ def create_app():
         methods=["GET", "POST", "OPTIONS"],
     )
 
-    app.register_blueprint(chat_bp)
+    app.register_blueprint(chat_bp, url_prefix="/api")
 
     return app
