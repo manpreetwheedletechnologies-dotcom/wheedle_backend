@@ -1,0 +1,25 @@
+name: Auto Deploy Backend (DEV)
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        key: ${{ secrets.VPS_SSH_KEY }}
+        script: |
+          cd /api/testing/wheedle_backend
+          git reset --hard
+          git pull origin dev
+          source venv/bin/activate
+          pip install -r requirements.txt
+          sudo systemctl restart wheedle_backend
