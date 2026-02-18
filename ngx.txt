@@ -1,5 +1,5 @@
 server {
-    listen 80;
+    listen 810;
     server_name wheedletechnologies.com www.wheedletechnologies.com;
 
     root /var/www/wheedletechnologies.com/frontend;
