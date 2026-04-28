@@ -1,0 +1,15 @@
+flask
+flask-cors
+flask-pymongo
+flask-bcrypt
+flask-socketio
+python-socketio[asyncio_client]
+pymongo
+pyjwt
+python-dotenv
+openai
+PyPDF2
+selenium
+webdriver-manager
+beautifulsoup4
+bson

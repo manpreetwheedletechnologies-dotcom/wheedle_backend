@@ -8,32 +8,12 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from pymongo import MongoClient
-
 from app.config import API_KEY_SECRET, MONGO_URI, client
 from app.services.guardrails_service import is_blocked
 from app.services.ai_service import generate_ai_response
+from app.db import mongo  # ✅ shared Flask-PyMongo (same DB as live_chat_routes)
 
 chat_bp = Blueprint("chat", __name__)
-
-# ==========================
-# MongoDB Setup (from user code)
-# ==========================
-mongo_client = None
-mongo_db = None
-contacts_collection = None
-
-if MONGO_URI:
-    try:
-        mongo_client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000, connectTimeoutMS=5000)
-        mongo_db = mongo_client["chatbot_database"]
-        contacts_collection = mongo_db["user_contacts"]
-        print("✓ MongoDB connected successfully for chat")
-    except Exception as e:
-        print(f"⚠ MongoDB Connection Error (chat will run without database): {e}")
-        mongo_client = None
-        mongo_db = None
-        contacts_collection = None
 
 # ==========================
 # Dictionary Data
@@ -306,13 +286,15 @@ def chat():
             email = parts[0]
             phone = parts[1]
 
-            if contacts_collection is not None:
-                contacts_collection.insert_one({
+            try:
+                mongo.db.user_contacts.insert_one({
                     "email": email,
                     "phone": phone,
                     "ip": user_ip,
                     "created_at": datetime.utcnow()
                 })
+            except Exception as db_err:
+                print(f"[chat] contacts DB error: {db_err}")
 
             waiting_for_contact[user_ip] = False
 
